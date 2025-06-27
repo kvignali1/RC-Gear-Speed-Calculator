@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>RC Gear Speed Calculator</title>
+  <style>
+    body {
+      background: #111;
+      color: #eee;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      font-size: 20px;
+    }
+    .layout {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 40px;
+      flex-wrap: wrap;
+    }
+    .truck-container {
+      position: relative;
+      display: inline-block;
+    }
+    .gear-input {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      color: #000;
+    }
+    .gear-input input {
+      width: 80px;
+      padding: 10px;
+      font-size: 20px;
+      text-align: center;
+    }
+    .gear-input label.inline {
+      font-size: 16px;
+      margin-top: 5px;
+      color: #000;
+    }
+    .label {
+      font-weight: bold;
+      margin-bottom: 5px;
+      font-size: 22px;
+    }
+    #rear-diff {
+      top: 50px;
+      right: 130px;
+    }
+    #front-diff {
+      top: 50px;
+      left: 130px;
+    }
+    #rear-portal {
+      bottom: 15px;
+      right: 130px;
+    }
+    #front-portal {
+      bottom: 15px;
+      left: 130px;
+    }
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 20px;
+      font-size: 24px;
+    }
+    .preset-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .preset-buttons button {
+      padding: 8px 20px;
+      font-size: 18px;
+      cursor: pointer;
+      background-color: #444;
+      color: white;
+      border: none;
+      border-radius: 6px;
+    }
+    .preset-buttons button:hover {
+      background-color: #666;
+    }
+    #calculateBtn {
+      padding: 15px 30px;
+      font-size: 22px;
+      cursor: pointer;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 8px;
+    }
+    #calculateBtn:hover {
+      background-color: #218838;
+    }
+    .result {
+      font-size: 24px;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <h2 style="text-align: center; font-size: 32px;">RC Gear Speed Calculator</h2>
+
+  <div class="layout">
+    <div class="truck-container">
+      <img src="A_digital_vector_illustration_features_a_silhouett.png" alt="RC Truck" width="700">
+
+      <div id="front-diff" class="gear-input">
+        <div class="label">Front Diff</div>
+        <label class="inline">Pinion</label>
+        <input type="number" id="frontPinion" title="frontPinion">
+        <label class="inline">Ring</label>
+        <input type="number" id="frontRing">
+      </div>
+
+      <div id="rear-diff" class="gear-input">
+        <div class="label">Rear Diff</div>
+        <label class="inline">Pinion</label>
+        <input type="number" id="rearPinion">
+        <label class="inline">Ring</label>
+        <input type="number" id="rearRing">
+      </div>
+
+      <div id="front-portal" class="gear-input">
+        <div class="label">Front Portal</div>
+        <label class="inline">Drive</label>
+        <input type="number" id="frontPortalDrive">
+        <label class="inline">Driven</label>
+        <input type="number" id="frontPortalDriven">
+      </div>
+
+      <div id="rear-portal" class="gear-input">
+        <div class="label">Rear Portal</div>
+        <label class="inline">Drive</label>
+        <input type="number" id="rearPortalDrive">
+        <label class="inline">Driven</label>
+        <input type="number" id="rearPortalDriven">
+      </div>
+    </div>
+
+    <div class="sidebar">
+      
+      <button id="calculateBtn" onclick="calculateGears()">Calculate</button>
+      <div class="result" id="output"></div>
+    </div>
+  </div>
+
+  <script>
+    function calculateGears() {
+      const frontRing = parseFloat(document.getElementById('frontRing').value);
+      const frontPinion = parseFloat(document.getElementById('frontPinion').value);
+      const rearRing = parseFloat(document.getElementById('rearRing').value);
+      const rearPinion = parseFloat(document.getElementById('rearPinion').value);
+      const frontPortalDrive = parseFloat(document.getElementById('frontPortalDrive').value);
+      const frontPortalDriven = parseFloat(document.getElementById('frontPortalDriven').value);
+      const rearPortalDrive = parseFloat(document.getElementById('rearPortalDrive').value);
+      const rearPortalDriven = parseFloat(document.getElementById('rearPortalDriven').value);
+
+      const frontDiffRatio = frontRing / frontPinion;
+      const rearDiffRatio = rearRing / rearPinion;
+      const frontPortalRatio = frontPortalDriven / frontPortalDrive;
+      const rearPortalRatio = rearPortalDriven / rearPortalDrive;
+
+      const frontTotal = frontDiffRatio * frontPortalRatio;
+      const rearTotal = rearDiffRatio * rearPortalRatio;
+
+      const frontSpeed = 1 / frontTotal;
+      const rearSpeed = 1 / rearTotal;
+      const speedRatio = frontSpeed / rearSpeed;
+      const overdrivePercent = ((speedRatio - 1) * 100);
+
+      document.getElementById('output').innerHTML = `
+        <b>Front Total Ratio:</b> ${frontTotal.toFixed(3)}<br>
+        <b>Rear Total Ratio:</b> ${rearTotal.toFixed(3)}<br>
+        <b>Front/Rear Speed Ratio:</b> ${speedRatio.toFixed(3)}<br>
+        <b>Overdrive:</b> ${overdrivePercent.toFixed(1)}%
+      `;
+    }
+
+    function loadPreset(fRing, fPinion, rRing, rPinion, fDrive, fDriven, rDrive, rDriven) {
+      document.getElementById('frontRing').value = fRing;
+      document.getElementById('frontPinion').value = fPinion;
+      document.getElementById('rearRing').value = rRing;
+      document.getElementById('rearPinion').value = rPinion;
+      document.getElementById('frontPortalDrive').value = fDrive;
+      document.getElementById('frontPortalDriven').value = fDriven;
+      document.getElementById('rearPortalDrive').value = rDrive;
+      document.getElementById('rearPortalDriven').value = rDriven;
+    }
+  </script>
+</body>
+</html>
